@@ -1,3 +1,5 @@
+import "./styles/App.css";
+
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
@@ -19,7 +21,12 @@ import {
   updateDoc,
   doc,
   serverTimestamp,
+  getDoc,
+  getDocs,
 } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import ProjectsList from "./components/ProjectsList";
+import Tasklist from "./components/TaskList";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -42,10 +49,127 @@ const db = getFirestore(app);
 const analytics = getAnalytics(app);
 
 function App() {
+  const [user, setUser] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [project, setProject] = useState({
+    name: "",
+    tasks: [],
+  });
+  const [activeProject, setActiveProject] = useState();
+
+  const [task, setTask] = useState({
+    name: "",
+    desc: "",
+    completed: false,
+  });
+
+  const checkSignIn = function () {
+    auth.onAuthStateChanged((cu) => {
+      if (cu) {
+        console.log("logged in", cu);
+        setUser(cu);
+        getProjects();
+      } else {
+        console.log("logged out");
+      }
+    });
+  };
+
+  const signIn = async function () {
+    var provider = new GoogleAuthProvider();
+    await signInWithPopup(getAuth(), provider);
+    console.log(auth.currentUser);
+    setUser(auth.currentUser);
+  };
+
+  const getProjects = async function () {
+    if (user) {
+      try {
+        let arr = [];
+        const psnaps = await getDocs(collection(db, `${user.uid}`));
+        psnaps.forEach((doc) => {
+          console.log(doc.id, "==>", doc.data());
+          arr.push({ ...doc.data(), id: doc.id });
+        });
+
+        setProjects(arr);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      return;
+    }
+  };
+
+  useEffect(() => {
+    checkSignIn();
+  }, [user]);
+
+  const handleProjectSubmit = async (e) => {
+    e.preventDefault();
+    const ref = collection(db, `${user.uid}`);
+    const docRef = await addDoc(ref, { ...project });
+    console.log(docRef.id);
+    getProjects();
+  };
+
+  const handleActiveProject = function (e) {
+    // console.log(e.target, e.target.id);
+    // console.log(projects.find((p) => p.id === e.target.id));
+    const p = projects.find((p) => p.id === e.target.id);
+    setActiveProject({ ...p });
+  };
+
+  const addTask = async function (e) {
+    e.preventDefault();
+    const docRef = doc(db, `${user.uid}`, activeProject.id);
+    setActiveProject({
+      ...activeProject,
+      tasks: [task, ...activeProject.tasks],
+    });
+
+    await updateDoc(docRef, { ...activeProject });
+  };
+
   return (
     <div className="App">
-      <header className="App-header">hello world</header>
-      {console.log(auth)}
+      {!user && <button onClick={() => signIn()}>log in</button>}
+      {user && (
+        <>
+          {" "}
+          <aside>
+            <form onSubmit={handleProjectSubmit}>
+              <input
+                type="text"
+                onChange={(e) =>
+                  setProject({ ...project, name: e.target.value })
+                }
+              />
+              <button type="submit">Add project</button>
+            </form>
+            <ProjectsList
+              projects={projects}
+              activeHandle={handleActiveProject}
+            />
+          </aside>
+          <main>
+            <form onSubmit={addTask}>
+              <input
+                type="text"
+                onChange={(e) => setTask({ ...task, name: e.target.value })}
+              />
+              <button type="submit">add task</button>
+            </form>
+            <div>
+              {activeProject ? (
+                <Tasklist tasks={activeProject.tasks} />
+              ) : (
+                <p>please select a project</p>
+              )}
+            </div>
+          </main>
+        </>
+      )}
     </div>
   );
 }

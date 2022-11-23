@@ -1,0 +1,12 @@
+.App {
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
+
+aside,
+main {
+  border: 1px solid blue;
+  display: flex;
+  flex-direction: column;
+  min-height: 40rem;
+}
