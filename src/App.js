@@ -66,7 +66,7 @@ function App() {
   const checkSignIn = function () {
     auth.onAuthStateChanged((cu) => {
       if (cu) {
-        console.log("logged in", cu);
+        // console.log("logged in", cu);
         setUser(cu);
         getProjects();
       } else {
@@ -88,7 +88,7 @@ function App() {
         let arr = [];
         const psnaps = await getDocs(collection(db, `${user.uid}`));
         psnaps.forEach((doc) => {
-          console.log(doc.id, "==>", doc.data());
+          // console.log(doc.id, "==>", doc.data());
           arr.push({ ...doc.data(), id: doc.id });
         });
 
@@ -109,7 +109,6 @@ function App() {
     e.preventDefault();
     const ref = collection(db, `${user.uid}`);
     const docRef = await addDoc(ref, { ...project });
-    console.log(docRef.id);
     getProjects();
   };
 
@@ -128,7 +127,35 @@ function App() {
       tasks: [task, ...activeProject.tasks],
     });
 
-    await updateDoc(docRef, { ...activeProject });
+    try {
+      await updateDoc(docRef, {
+        tasks: [...activeProject.tasks, task],
+      });
+
+      await getProjects();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const delTask = async function (name) {
+    const docRef = doc(db, `${user.uid}`, activeProject.id);
+    const newTasks = activeProject.tasks.filter((t) => t.name !== name);
+    console.log(newTasks);
+    setActiveProject({
+      ...activeProject,
+      tasks: newTasks,
+    });
+
+    try {
+      await updateDoc(docRef, {
+        tasks: [...newTasks],
+      });
+
+      await getProjects();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -162,7 +189,7 @@ function App() {
             </form>
             <div>
               {activeProject ? (
-                <Tasklist tasks={activeProject.tasks} />
+                <Tasklist tasks={activeProject.tasks} delTask={delTask} />
               ) : (
                 <p>please select a project</p>
               )}
