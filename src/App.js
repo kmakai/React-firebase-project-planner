@@ -23,6 +23,7 @@ import {
   serverTimestamp,
   getDoc,
   getDocs,
+  deleteDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import ProjectsList from "./components/ProjectsList";
@@ -75,11 +76,16 @@ function App() {
     });
   };
 
-  const signIn = async function () {
+  const signInUser = async function () {
     var provider = new GoogleAuthProvider();
     await signInWithPopup(getAuth(), provider);
     console.log(auth.currentUser);
     setUser(auth.currentUser);
+  };
+
+  const signOutUser = async function () {
+    await signOut(auth);
+    setUser(null);
   };
 
   const getProjects = async function () {
@@ -108,13 +114,21 @@ function App() {
   const handleProjectSubmit = async (e) => {
     e.preventDefault();
     const ref = collection(db, `${user.uid}`);
-    const docRef = await addDoc(ref, { ...project });
-    getProjects();
+    await addDoc(ref, { ...project });
+    await getProjects();
+    e.target.closest("form").reset();
+  };
+
+  const delProject = async function (e) {
+    console.log(e.target.closest("li").id);
+    const projectID = e.target.closest("li").id;
+    const docRef = doc(db, `${user.uid}`, projectID);
+    await deleteDoc(docRef);
+    await getProjects();
   };
 
   const handleActiveProject = function (e) {
-    // console.log(e.target, e.target.id);
-    // console.log(projects.find((p) => p.id === e.target.id));
+    if (!e.target.id) return;
     const p = projects.find((p) => p.id === e.target.id);
     setActiveProject({ ...p });
   };
@@ -133,6 +147,8 @@ function App() {
       });
 
       await getProjects();
+
+      e.target.closest("form").reset();
     } catch (error) {
       console.log(error);
     }
@@ -160,43 +176,51 @@ function App() {
 
   return (
     <div className="App">
-      {!user && <button onClick={() => signIn()}>log in</button>}
-      {user && (
-        <>
-          {" "}
-          <aside>
-            <form onSubmit={handleProjectSubmit}>
-              <input
-                type="text"
-                onChange={(e) =>
-                  setProject({ ...project, name: e.target.value })
-                }
-              />
-              <button type="submit">Add project</button>
-            </form>
-            <ProjectsList
-              projects={projects}
-              activeHandle={handleActiveProject}
-            />
-          </aside>
-          <main>
-            <form onSubmit={addTask}>
-              <input
-                type="text"
-                onChange={(e) => setTask({ ...task, name: e.target.value })}
-              />
-              <button type="submit">add task</button>
-            </form>
-            <div>
-              {activeProject ? (
-                <Tasklist tasks={activeProject.tasks} delTask={delTask} />
-              ) : (
-                <p>please select a project</p>
-              )}
-            </div>
-          </main>
-        </>
+      {user ? (
+        <button onClick={() => signOutUser()}>log out</button>
+      ) : (
+        <button onClick={() => signInUser()}>log in</button>
       )}
+
+      <div className="app-wrapper">
+        {user && (
+          <>
+            {" "}
+            <aside>
+              <form onSubmit={handleProjectSubmit}>
+                <input
+                  type="text"
+                  onChange={(e) =>
+                    setProject({ ...project, name: e.target.value })
+                  }
+                />
+                <button type="submit">Add project</button>
+              </form>
+              <ProjectsList
+                projects={projects}
+                activeHandle={handleActiveProject}
+                del={delProject}
+              />
+            </aside>
+            <main>
+              <form onSubmit={addTask}>
+                <input
+                  type="text"
+                  onChange={(e) => setTask({ ...task, name: e.target.value })}
+                />
+                <button type="submit">add task</button>
+              </form>
+              <div>
+                {activeProject ? (
+                  <Tasklist tasks={activeProject.tasks} delTask={delTask} />
+                ) : (
+                  <p>please select a project</p>
+                )}
+              </div>
+            </main>
+          </>
+        )}
+      </div>
     </div>
   );
 }

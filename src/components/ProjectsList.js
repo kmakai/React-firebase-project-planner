@@ -1,12 +1,16 @@
 import React from "react";
+import { FaRegTrashAlt } from "react-icons/fa";
 
-function ProjectsList({ projects, activeHandle }) {
+function ProjectsList({ projects, activeHandle, del }) {
   return (
     <div>
-      <ul onClick={activeHandle}>
+      <ul onClick={activeHandle} className="project-list-ul">
         {projects &&
           projects.map((p, ind) => (
             <li key={ind} id={p.id}>
+              <button style={{ border: "none", color: "red" }} onClick={del}>
+                <FaRegTrashAlt />
+              </button>
               {p.name}
             </li>
           ))}
