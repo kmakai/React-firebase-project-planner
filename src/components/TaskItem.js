@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 
-function TaskItem({ task, delItem }) {
-  const [checked, setChecked] = useState(false);
+function TaskItem({ task, delItem, checkhandle }) {
+  const [checked, setChecked] = useState(task.completed);
+
   return (
     <div
       className="task-item"
@@ -11,9 +12,16 @@ function TaskItem({ task, delItem }) {
         textDecoration: checked && "line-through",
       }}
     >
-      <input type="checkbox" onClick={(e) => setChecked(e.target.checked)} />
+      <input
+        type="checkbox"
+        checked={checked ? true : false}
+        onClick={(e) => {
+          setChecked(e.target.checked);
+          checkhandle(task, e.target.checked);
+        }}
+        onChange={(e) => {}}
+      />
       <p>{task.name}</p>
-      <p>{task.desc}</p>
       <p>{task.completed}</p>
       <button
         onClick={() => delItem(task.name)}

@@ -1,5 +1,6 @@
 import React from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
+import "../styles/Projectlist.css";
 
 function ProjectsList({ projects, activeHandle, del }) {
   return (

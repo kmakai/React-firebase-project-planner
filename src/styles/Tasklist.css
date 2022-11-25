@@ -1,0 +1,16 @@
+.task-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.task-item {
+  border: 1px lightblue dotted;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  text-transform: capitalize;
+  padding: 0.25rem;
+}

@@ -28,6 +28,7 @@ import {
 import { useEffect, useState } from "react";
 import ProjectsList from "./components/ProjectsList";
 import Tasklist from "./components/TaskList";
+import Navbar from "./components/Navbar";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -60,7 +61,6 @@ function App() {
 
   const [task, setTask] = useState({
     name: "",
-    desc: "",
     completed: false,
   });
 
@@ -120,7 +120,6 @@ function App() {
   };
 
   const delProject = async function (e) {
-    console.log(e.target.closest("li").id);
     const projectID = e.target.closest("li").id;
     const docRef = doc(db, `${user.uid}`, projectID);
     await deleteDoc(docRef);
@@ -157,7 +156,6 @@ function App() {
   const delTask = async function (name) {
     const docRef = doc(db, `${user.uid}`, activeProject.id);
     const newTasks = activeProject.tasks.filter((t) => t.name !== name);
-    console.log(newTasks);
     setActiveProject({
       ...activeProject,
       tasks: newTasks,
@@ -174,14 +172,31 @@ function App() {
     }
   };
 
+  const updateTaskComplete = async function (task, checkbox) {
+    const docRef = doc(db, `${user.uid}`, activeProject.id);
+
+    const newTasks = activeProject.tasks.filter((t) => t.name !== task.name);
+    newTasks.push({ ...task, completed: checkbox });
+    setActiveProject({
+      ...activeProject,
+      tasks: newTasks,
+    });
+
+    try {
+      await updateDoc(docRef, {
+        ...activeProject,
+        tasks: [...newTasks],
+      });
+
+      await getProjects();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="App">
-      {user ? (
-        <button onClick={() => signOutUser()}>log out</button>
-      ) : (
-        <button onClick={() => signInUser()}>log in</button>
-      )}
-
+      <Navbar user={user} signin={signInUser} signout={signOutUser} />
       <div className="app-wrapper">
         {user && (
           <>
@@ -194,7 +209,9 @@ function App() {
                     setProject({ ...project, name: e.target.value })
                   }
                 />
-                <button type="submit">Add project</button>
+                <button type="submit" disabled={project.name === ""}>
+                  Add project
+                </button>
               </form>
               <ProjectsList
                 projects={projects}
@@ -208,11 +225,17 @@ function App() {
                   type="text"
                   onChange={(e) => setTask({ ...task, name: e.target.value })}
                 />
-                <button type="submit">add task</button>
+                <button type="submit" disabled={task.name === ""}>
+                  add task
+                </button>
               </form>
               <div>
                 {activeProject ? (
-                  <Tasklist tasks={activeProject.tasks} delTask={delTask} />
+                  <Tasklist
+                    tasks={activeProject.tasks}
+                    delTask={delTask}
+                    handleChecked={updateTaskComplete}
+                  />
                 ) : (
                   <p>please select a project</p>
                 )}

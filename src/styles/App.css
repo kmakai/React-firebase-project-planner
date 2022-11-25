@@ -1,12 +1,35 @@
+.App {
+  width: 75%;
+}
 .app-wrapper {
   display: grid;
   grid-template-columns: auto 1fr;
+  gap: 1.5rem;
+  margin: 0 1rem;
 }
 
 aside,
 main {
-  border: 1px solid blue;
+  border: 1px solid lightblue;
   display: flex;
   flex-direction: column;
   min-height: 40rem;
+  border-radius: 1rem;
+  padding: 1rem;
+  gap: 2rem;
+}
+
+/* form styles */
+
+aside form input,
+aside form button,
+main form input,
+main form button {
+  border: 1px lightgray solid;
+  font-size: 0.75rem;
+  padding: 0.5rem;
+}
+
+aside form input:focus {
+  outline: none;
 }
