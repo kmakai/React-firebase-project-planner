@@ -37,7 +37,7 @@ function SignUp() {
 
         <div>
           <p className="sign-up-text">
-            Have an account please <strong>Log-in</strong>.
+            Have an account <strong>?</strong> please <strong>Log-in</strong>.
           </p>
           <LoginForm />
         </div>
