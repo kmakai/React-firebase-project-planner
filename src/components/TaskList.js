@@ -15,7 +15,7 @@ function Tasklist({ tasks, delTask, handleChecked }) {
           />
         ))
       ) : (
-        <p>no tasks on this project</p>
+        <strong>no tasks on this project</strong>
       )}
     </div>
   );

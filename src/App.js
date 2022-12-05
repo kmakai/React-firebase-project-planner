@@ -226,7 +226,7 @@ function App() {
                     handleChecked={updateTaskComplete}
                   />
                 ) : (
-                  <p>please select a project</p>
+                  <strong>please select a project</strong>
                 )}
               </div>
             </main>

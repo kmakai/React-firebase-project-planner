@@ -22,11 +22,7 @@ function LoginForm() {
 
     try {
       const auth = getAuth();
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
       console.error("Bad User Credentials");
     }

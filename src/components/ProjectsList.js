@@ -6,6 +6,7 @@ function ProjectsList({ projects, activeHandle, del }) {
   return (
     <div>
       <ul onClick={activeHandle} className="project-list-ul">
+        {projects.length === 0 && <strong>Please add a project</strong>}
         {projects &&
           projects.map((p, ind) => (
             <li key={ind} id={p.id}>
