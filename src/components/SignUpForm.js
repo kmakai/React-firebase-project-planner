@@ -4,8 +4,6 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import { setDoc, doc, serverTimestamp } from "firebase/firestore";
-import { db } from "../firebase.config";
 
 function SignUpForm() {
   const [formData, setFormData] = useState({
@@ -30,13 +28,7 @@ function SignUpForm() {
     try {
       const auth = getAuth();
 
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      const user = userCredential.user;
+      await createUserWithEmailAndPassword(auth, email, password);
 
       updateProfile(auth.currentUser, {
         displayName: name,

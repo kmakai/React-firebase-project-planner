@@ -1,26 +1,17 @@
 import "./styles/App.css";
 
 // Import the functions you need from the SDKs you need
-import { getAnalytics } from "firebase/analytics";
 import {
   getAuth,
-  onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
   signOut,
 } from "firebase/auth";
 import {
-  getFirestore,
   collection,
   addDoc,
-  query,
-  orderBy,
-  onSnapshot,
-  setDoc,
   updateDoc,
   doc,
-  serverTimestamp,
-  getDoc,
   getDocs,
   deleteDoc,
 } from "firebase/firestore";
