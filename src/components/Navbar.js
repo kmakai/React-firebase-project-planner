@@ -1,5 +1,6 @@
 import React from "react";
 import "../styles/Navbar.css";
+import { FcGoogle } from "react-icons/fc";
 
 function Navbar({ user, signin, signout }) {
   return (
@@ -10,7 +11,10 @@ function Navbar({ user, signin, signout }) {
         {user ? (
           <button onClick={signout}>log out</button>
         ) : (
-          <button onClick={signin}>log in</button>
+          <button onClick={signin} className="google-login">
+            log in with
+            <FcGoogle />
+          </button>
         )}
         {user && (
           <div className="user-profile">

@@ -1,7 +1,6 @@
 import "./styles/App.css";
 
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import {
   getAuth,
@@ -25,30 +24,17 @@ import {
   getDocs,
   deleteDoc,
 } from "firebase/firestore";
+import { db } from "./firebase.config";
 import { useEffect, useState } from "react";
 import ProjectsList from "./components/ProjectsList";
 import Tasklist from "./components/TaskList";
 import Navbar from "./components/Navbar";
+import SignUp from "./components/SignUp";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDByEHTKbat6MQcsG6vwOdfHEe5K80QsLc",
-  authDomain: "react-project-planner-bd320.firebaseapp.com",
-  projectId: "react-project-planner-bd320",
-  storageBucket: "react-project-planner-bd320.appspot.com",
-  messagingSenderId: "756933992318",
-  appId: "1:756933992318:web:6816ed89cde6010411dd2f",
-  measurementId: "G-Z0978PBP6T",
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const analytics = getAnalytics(app);
 
 function App() {
   const [user, setUser] = useState(null);
@@ -64,17 +50,7 @@ function App() {
     completed: false,
   });
 
-  const checkSignIn = function () {
-    auth.onAuthStateChanged((cu) => {
-      if (cu) {
-        // console.log("logged in", cu);
-        setUser(cu);
-        getProjects();
-      } else {
-        console.log("logged out");
-      }
-    });
-  };
+  const auth = getAuth();
 
   const signInUser = async function () {
     var provider = new GoogleAuthProvider();
@@ -108,8 +84,19 @@ function App() {
   };
 
   useEffect(() => {
+    const checkSignIn = function () {
+      auth.onAuthStateChanged((cu) => {
+        if (cu) {
+          // console.log("logged in", cu);
+          setUser(cu);
+          getProjects();
+        } else {
+          console.log("logged out");
+        }
+      });
+    };
     checkSignIn();
-  }, [user]);
+  });
 
   const handleProjectSubmit = async (e) => {
     e.preventDefault();
@@ -198,7 +185,9 @@ function App() {
     <div className="App">
       <Navbar user={user} signin={signInUser} signout={signOutUser} />
       <div className="app-wrapper">
-        {user && (
+        {!user ? (
+          <SignUp />
+        ) : (
           <>
             {" "}
             <aside>
