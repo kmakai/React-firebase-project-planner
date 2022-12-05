@@ -5,6 +5,20 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 2rem;
+}
+
+.sign-up .forms {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 4rem;
+}
+
+.forms div {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .sign-up h2 {

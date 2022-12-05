@@ -1,4 +1,11 @@
 import { useState } from "react";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { setDoc, doc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase.config";
 
 function SignUpForm() {
   const [formData, setFormData] = useState({
@@ -17,9 +24,31 @@ function SignUpForm() {
     }));
   };
 
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const auth = getAuth();
+
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      const user = userCredential.user;
+
+      updateProfile(auth.currentUser, {
+        displayName: name,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="login-form-container">
-      <form className="login-form">
+      <form className="login-form" onSubmit={onSubmit}>
         <label htmlFor="name">Name:</label>
         <input
           type="text"
