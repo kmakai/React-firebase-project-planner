@@ -46,7 +46,6 @@ function App() {
   const signInUser = async function () {
     var provider = new GoogleAuthProvider();
     await signInWithPopup(getAuth(), provider);
-    console.log(auth.currentUser);
     setUser(auth.currentUser);
   };
 
