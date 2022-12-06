@@ -73,20 +73,22 @@ function App() {
     }
   };
 
+  const checkSignIn = () => {
+    console.log("effect");
+    auth.onAuthStateChanged((cu) => {
+      if (cu) {
+        // console.log("logged in", cu);
+        setUser(cu);
+        getProjects();
+      } else {
+        console.log("logged out");
+      }
+    });
+  };
+
   useEffect(() => {
-    const checkSignIn = function () {
-      auth.onAuthStateChanged((cu) => {
-        if (cu) {
-          // console.log("logged in", cu);
-          setUser(cu);
-          getProjects();
-        } else {
-          console.log("logged out");
-        }
-      });
-    };
     checkSignIn();
-  });
+  }, []);
 
   const handleProjectSubmit = async (e) => {
     e.preventDefault();
