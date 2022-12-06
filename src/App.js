@@ -4,6 +4,7 @@ import "./styles/App.css";
 import {
   getAuth,
   GoogleAuthProvider,
+  onAuthStateChanged,
   signInWithPopup,
   signOut,
 } from "firebase/auth";
@@ -43,10 +44,21 @@ function App() {
 
   const auth = getAuth();
 
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      }
+    });
+
+    if (user) getProjects();
+  });
+
   const signInUser = async function () {
     var provider = new GoogleAuthProvider();
     await signInWithPopup(getAuth(), provider);
     setUser(auth.currentUser);
+    getProjects();
   };
 
   const signOutUser = async function () {
@@ -72,22 +84,6 @@ function App() {
       return;
     }
   };
-
-  useEffect(() => {
-    const checkSignIn = () => {
-      console.log("effect");
-      auth.onAuthStateChanged((cu) => {
-        if (cu) {
-          // console.log("logged in", cu);
-          setUser(cu);
-          getProjects();
-        } else {
-          console.log("logged out");
-        }
-      });
-    };
-    checkSignIn();
-  });
 
   const handleProjectSubmit = async (e) => {
     e.preventDefault();

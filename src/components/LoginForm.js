@@ -10,7 +10,6 @@ function LoginForm() {
   const { email, password } = formData;
 
   const onChange = (e) => {
-    console.log(e.target.value);
     setFormData((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
