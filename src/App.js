@@ -87,7 +87,7 @@ function App() {
       });
     };
     checkSignIn();
-  }, []);
+  });
 
   const handleProjectSubmit = async (e) => {
     e.preventDefault();
